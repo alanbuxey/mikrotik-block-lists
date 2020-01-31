@@ -11,31 +11,6 @@ They were adapted to be easily deployed on a personal server.
 
 ## Router Scripts
 
-### [OpenBL](https://www.openbl.org/lists.html)
-“The OpenBL.org project (formerly known as the SSH blacklist) is about detecting, logging and reporting various types of internet abuse. Currently our hosts monitor ports 21 (FTP), 22 (SSH), 23 (TELNET), 25 (SMTP), 110 (POP3), 143 (IMAP), 587 (Submission), 993 (IMAPS) and 995 (POP3S) for bruteforce login attacks as well as scans on ports 80 (HTTP) and 443 (HTTPS) for vulnerable installations of phpMyAdmin and other web applications.”
-
-	# Script which will download the drop list as a text file
-	/system script add name="Download_openbl" source={
-	/tool fetch url="http://yourdomain.com/lists/openbl.rsc" mode=http;
-	:log info "Downloaded openbl.rsc";
-	}
-
-	# Script which will Remove old Begone list and add new one
-	/system script add name="Replace_openbl" source={
-	:foreach i in=[/ip firewall address-list find ] do={
-	:if ( [/ip firewall address-list get $i comment] = "OpenBL" ) do={
-	/ip firewall address-list remove $i
-	}
-	}
-	/import file-name=openbl.rsc;
-	:log info "Removal old openbl and add new";
-	}
-
-	# Schedule the download and application of the openbl list
-	/system scheduler add comment="Download openbl list" interval=7d name="DownloadBegoneList" on-event=Download_openbl start-date=jan/01/1970 start-time=01:05:00
-	/system scheduler add comment="Apply openbl List" interval=7d name="InstallBegoneList" on-event=Replace_openbl start-date=jan/01/1970 start-time=01:15:00
-
-
 ### [SpamHaus](http://www.spamhaus.org/drop/)
 
 “Spamhaus Don’t Route Or Peer List (DROP)
@@ -47,7 +22,7 @@ The DROP list will not include any IP address space under the control of any leg
 	:log info "Downloaded spamhaus.rsc";
 	}
 
-	# Script which will Remove old Begone list and add new one
+	# Script which will Remove old spamhaus list and add new one
 	/system script add name="Replace_spamhaus" source={
 	:foreach i in=[/ip firewall address-list find ] do={
 	:if ( [/ip firewall address-list get $i comment] = "SpamHaus" ) do={
@@ -55,12 +30,12 @@ The DROP list will not include any IP address space under the control of any leg
 	}
 	}
 	/import file-name=spamhaus.rsc;
-	:log info "Removal old openbl and add new";
+	:log info "Removal old spamhaus and add new";
 	}
 
 	# Schedule the download and application of the spamhaus list
-	/system scheduler add comment="Download spamnaus list" interval=7d name="DownloadSpamhausList" on-event=Download_spamhaus start-date=jan/01/1970 start-time=02:02:00
-	/system scheduler add comment="Apply spamnaus List" interval=7d name="InstallSpamhausList" on-event=Replace_spamhaus start-date=jan/01/1970 start-time=02:12:00
+	/system scheduler add comment="Download spamhaus list" interval=7d name="DownloadSpamhausList" on-event=Download_spamhaus start-date=jan/01/1970 start-time=02:02:00
+	/system scheduler add comment="Apply spamhaus List" interval=7d name="InstallSpamhausList" on-event=Replace_spamhaus start-date=jan/01/1970 start-time=02:12:00
 
 ### [dshield](https://www.dshield.org/)
 
@@ -72,7 +47,7 @@ The DROP list will not include any IP address space under the control of any leg
 	:log info "Downloaded dshield.rsc";
 	}
 
-	# Script which will Remove old Begone list and add new one
+	# Script which will Remove old dshield list and add new one
 	/system script add name="Replace_dshield" source={
 	:foreach i in=[/ip firewall address-list find ] do={
 	:if ( [/ip firewall address-list get $i comment] = "DShield" ) do={
@@ -86,3 +61,29 @@ The DROP list will not include any IP address space under the control of any leg
 	# Schedule the download and application of the dshield list
 	/system scheduler add comment="Download dshield list" interval=7d name="DownloadDShieldList" on-event=Download_dshield start-date=jan/01/1970 start-time=02:42:00
 	/system scheduler add comment="Apply dshield List" interval=7d name="InstallDShieldList" on-event=Replace_dshield start-date=jan/01/1970 start-time=02:52:00
+
+### [malc0de]  (https://malc0de.com/dashboard)
+
+"The files below will be updated daily with domains that have been indentified distributing malware during the past 30 days."
+
+    # Script which will download the malc0de list as a text file
+    /system script add name="Download_malc0de" source={
+        /tool fetch url="http://yourdomain.com/lists/malc0de.rsc" mode=http;
+        :log info "Downloaded malc0de.rsc";
+    }
+    
+    # Script which will Remove old malc0de list and add new one
+    /system script add name="Replace_malc0de" source={
+        :foreach i in=[/ip firewall address-list find ] do={
+            :if ( [/ip firewall address-list get $i comment] = "malc0de" ) do={
+            /ip firewall address-list remove $i
+            }
+        }
+        /import file-name=malc0de.rsc;
+        :log info "Removal of old malc0de and add new";
+    }
+
+	# Schedule the download and application of the malc0de list
+	/system scheduler add comment="Download malc0de list" interval=7d name="Downloadmalc0deList" on-event=Download_malc0de start-date=jan/01/1970 start-time=02:02:00
+	/system scheduler add comment="Apply malc0de List" interval=7d name="Installmalc0deList" on-event=Replace_malc0de start-date=jan/01/1970 start-time=02:12:00
+
